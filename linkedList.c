@@ -62,3 +62,48 @@ void freeList(linkedList *list) {
 
   initializeList(list);
 }
+
+// REPL COMMANDS
+
+void helpCommand() {
+  printf("h (help)\t- Displays a list of all commands\n");
+  printf("i (insert)\t- Lets you insert a new value into the list\n");
+  printf("p (print)\t- Prints the length and content of the list\n");
+  printf("q (quit)\t- Terminates the program \n\n");
+}
+
+void insertCommand(linkedList *list) {
+  int n;
+  printf("Number to insert: ");
+  scanf("%d", &n);
+
+  int *value = (int *)malloc(sizeof(int));
+  *value = n;
+
+  insert(list, value);
+  printf("\n");
+}
+
+void printCommand(linkedList *list) {
+  printList(list);
+  printf("\n\n");
+}
+
+bool linkedListRepl(char command, linkedList *list) {
+  switch (command) {
+  case 'h':
+    helpCommand();
+    break;
+  case 'i':
+    insertCommand(list);
+    break;
+  case 'p':
+    printCommand(list);
+    break;
+  default:
+    return false;
+    break;
+  }
+
+  return true;
+}

@@ -1,5 +1,6 @@
 #ifndef LINKEDLIST_H_
 #define LINKEDLIST_H_
+#include <stdbool.h>
 
 typedef struct node {
   void *value;
@@ -12,9 +13,10 @@ typedef struct linkedList {
   int length;
 } linkedList;
 
-void initializeList(linkedList *list);
-void insert(linkedList *list, void *value);
-void printList(linkedList *list);
-void freeList(linkedList *list);
+bool linkedListRepl(char, linkedList *);
+void initializeList(linkedList *);
+void insert(linkedList *, void *);
+void printList(linkedList *);
+void freeList(linkedList *);
 
 #endif

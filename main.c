@@ -1,7 +1,5 @@
 #include "linkedList.h"
-#include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 
 void printWelcome();
@@ -31,11 +29,14 @@ void printWelcome() {
   printf("\n\n");
 }
 
-void quitCommand(bool *q);
-void invalidCommand();
-void helpCommand();
-void insertCommand();
-void printCommand();
+void quitCommand() {
+  printf("Terminating. Thank you for using list REPL!\n\n");
+}
+
+void invalidCommand() {
+  printf("The given command is invalid. Type 'h' to see a list of all "
+         "commands.\n\n");
+}
 
 void clearInputBuffer() {
   int c;
@@ -44,69 +45,24 @@ void clearInputBuffer() {
 }
 
 void repl() {
-  bool terminated = false;
   int command;
 
-  while (!terminated) {
+  while (true) {
     putchar('>');
     fflush(stdout);
 
     command = getchar();
 
-    switch (command) {
-    case 'q':
-      quitCommand(&terminated);
-      break;
-    case 'h':
-      helpCommand();
-      clearInputBuffer();
-      break;
-    case 'i':
-      insertCommand();
-      clearInputBuffer();
-      break;
-    case 'p':
-      printCommand();
-      clearInputBuffer();
-      break;
-    default:
-      invalidCommand();
-      clearInputBuffer();
-      break;
+    if (command == 'q') {
+      quitCommand();
+      return;
     }
+
+    bool valid = linkedListRepl(command, &list);
+    if (!valid) {
+      invalidCommand();
+    }
+
+    clearInputBuffer();
   }
-}
-
-void quitCommand(bool *q) {
-  printf("Terminating. Thank you for using list REPL!\n\n");
-  *q = true;
-}
-
-void helpCommand() {
-  printf("h (help)\t- Displays a list of all commands\n");
-  printf("i (insert)\t- Lets you insert a new value into the list\n");
-  printf("p (print)\t- Prints the length and content of the list\n");
-  printf("q (quit)\t- Terminates the program \n\n");
-}
-
-void invalidCommand() {
-  printf("The given command is invalid. Type 'h' to see a list of all "
-         "commands.\n\n");
-}
-
-void insertCommand() {
-  int n;
-  printf("Number to insert: ");
-  scanf("%d", &n);
-
-  int *value = (int *)malloc(sizeof(int));
-  *value = n;
-
-  insert(&list, value);
-  printf("\n");
-}
-
-void printCommand() {
-  printList(&list);
-  printf("\n\n");
 }
