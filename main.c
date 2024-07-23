@@ -12,6 +12,7 @@ int main() {
 
   printWelcome();
   repl();
+  freeList(&list);
 
   return 0;
 }
