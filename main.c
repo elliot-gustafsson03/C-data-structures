@@ -1,25 +1,16 @@
-#include "linkedList.h"
+#include "lists/arrayList.h"
+#include "lists/linkedList.h"
 #include <stdio.h>
 #include <unistd.h>
 
-void printWelcome();
-void repl();
-
-linkedList list;
-
-int main() {
-  initializeList(&list);
-
-  printWelcome();
-  repl();
-  freeList(&list);
-
-  return 0;
-}
+typedef struct listInterface {
+  bool (*repl)(char, void *);
+  void (*freeList)(void *);
+} listInterface;
 
 void printWelcome() {
   char *welcomeMessage =
-      "Welcome to list REPL. Type 'h' to get a list of all commands";
+      "\nWelcome to list REPL! Please start by selecting a list type";
   printf("%s\n", welcomeMessage);
 
   char *letter = welcomeMessage;
@@ -28,6 +19,65 @@ void printWelcome() {
     letter++;
   }
   printf("\n\n");
+}
+
+void clearInputBuffer() {
+  int c;
+  while ((c = getchar()) != '\n' && c != EOF)
+    ;
+}
+
+void repl(void *, listInterface *);
+
+void startRepl() {
+  printf("(1) Array list\n");
+  printf("(2) Linked list\n");
+
+  int choice;
+  bool validChoice;
+
+  listInterface li;
+  void *list;
+
+  while (!validChoice) {
+    printf("\nChoose list type: ");
+    scanf("%d", &choice);
+
+    switch (choice) {
+    case 1:
+      printf("\nYou have chosen Array list. Type 'h' to see a list of possible "
+             "commands\n\n");
+
+      arrayList al;
+      initializeArrayList(&al);
+      li.repl = arrayListRepl;
+      li.freeList = freeArrayList;
+      list = &al;
+
+      validChoice = true;
+      break;
+
+    case 2:
+      printf("\nYou have chosen Linked list. Type 'h' to see a list of "
+             "possible commands\n\n");
+
+      linkedList ll;
+      initializeLinkedList(&ll);
+      li.repl = linkedListRepl;
+      li.freeList = freeLinkedList;
+      list = &ll;
+
+      validChoice = true;
+      break;
+
+    default:
+      printf("Invalid choice. Please pick one of the above\n");
+    }
+
+    clearInputBuffer();
+  }
+
+  repl(list, &li);
 }
 
 void quitCommand() {
@@ -39,13 +89,7 @@ void invalidCommand() {
          "commands.\n\n");
 }
 
-void clearInputBuffer() {
-  int c;
-  while ((c = getchar()) != '\n' && c != EOF)
-    ;
-}
-
-void repl() {
+void repl(void *list, listInterface *li) {
   int command;
 
   while (true) {
@@ -59,11 +103,20 @@ void repl() {
       return;
     }
 
-    bool valid = linkedListRepl(command, &list);
+    bool valid = li->repl(command, list);
     if (!valid) {
       invalidCommand();
     }
 
     clearInputBuffer();
   }
+
+  li->freeList(list);
+}
+
+int main() {
+  printWelcome();
+  startRepl();
+
+  return 0;
 }

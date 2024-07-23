@@ -2,13 +2,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void initializeList(linkedList *list) {
+void initializeLinkedList(linkedList *list) {
   list->head = NULL;
   list->last = NULL;
   list->length = 0;
 }
 
-node *createNode(void *value) {
+static node *createNode(void *value) {
   node *newNode = (node *)malloc(sizeof(node));
   newNode->value = value;
   newNode->next = NULL;
@@ -16,7 +16,7 @@ node *createNode(void *value) {
   return newNode;
 }
 
-void insert(linkedList *list, void *value) {
+static void insert(linkedList *list, void *value) {
   node *newNode = createNode(value);
 
   if (list->length == 0) {
@@ -30,7 +30,7 @@ void insert(linkedList *list, void *value) {
   list->length++;
 }
 
-void printList(linkedList *list) {
+static void printList(linkedList *list) {
 
   printf("Length of list: %d\n", list->length);
   putchar('[');
@@ -48,11 +48,13 @@ void printList(linkedList *list) {
     }
   }
 
-  printf("]");
+  putchar(']');
 }
 
-void freeList(linkedList *list) {
-  node *current = list->head;
+void freeLinkedList(void *list) {
+  linkedList *l = (linkedList *)list;
+
+  node *current = l->head;
   while (current != NULL) {
     node *next = current->next;
     free(current->value);
@@ -60,19 +62,19 @@ void freeList(linkedList *list) {
     current = next;
   }
 
-  initializeList(list);
+  initializeLinkedList(l);
 }
 
 // REPL COMMANDS
 
-void helpCommand() {
+static void helpCommand() {
   printf("h (help)\t- Displays a list of all commands\n");
   printf("i (insert)\t- Lets you insert a new value into the list\n");
   printf("p (print)\t- Prints the length and content of the list\n");
   printf("q (quit)\t- Terminates the program \n\n");
 }
 
-void insertCommand(linkedList *list) {
+static void insertCommand(linkedList *list) {
   int n;
   printf("Number to insert: ");
   scanf("%d", &n);
@@ -84,12 +86,12 @@ void insertCommand(linkedList *list) {
   printf("\n");
 }
 
-void printCommand(linkedList *list) {
+static void printCommand(linkedList *list) {
   printList(list);
   printf("\n\n");
 }
 
-bool linkedListRepl(char command, linkedList *list) {
+bool linkedListRepl(char command, void *list) {
   switch (command) {
   case 'h':
     helpCommand();
@@ -102,7 +104,6 @@ bool linkedListRepl(char command, linkedList *list) {
     break;
   default:
     return false;
-    break;
   }
 
   return true;

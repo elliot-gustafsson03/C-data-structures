@@ -13,10 +13,8 @@ typedef struct linkedList {
   int length;
 } linkedList;
 
-bool linkedListRepl(char, linkedList *);
-void initializeList(linkedList *);
-void insert(linkedList *, void *);
-void printList(linkedList *);
-void freeList(linkedList *);
+void initializeLinkedList(linkedList *);
+bool linkedListRepl(char, void *);
+void freeLinkedList(void *);
 
 #endif
